@@ -1,0 +1,44 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: 40 20% 98%;
+  --foreground: 24 10% 10%;
+  --radius: 1rem;
+}
+
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  background: #fafaf9;
+  color: #1c1917;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior-y: none;
+}
+::selection { background: #a7f3d0; }
+
+@layer components {
+  .field {
+    @apply w-full min-h-[52px] px-4 py-3 rounded-2xl border border-stone-300 bg-white text-stone-900 placeholder:text-stone-400 outline-none transition-[border-color,box-shadow];
+    font-size: 16px;
+  }
+  .field:focus { @apply border-emerald-600 ring-4 ring-emerald-600/15; }
+  textarea.field { @apply py-3; }
+}
+
+.font-heading { font-family: 'Outfit', 'Plus Jakarta Sans', sans-serif; }
+.font-arabic { font-family: 'Amiri', 'Scheherazade New', 'Traditional Arabic', serif; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { scrollbar-width: none; }
+
+@keyframes up { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+.anim-up { animation: up 380ms cubic-bezier(.2,.7,.2,1) both; }
+@keyframes shake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); } }
+.anim-shake { animation: shake 250ms ease-in-out; }
+
+@media (prefers-reduced-motion: reduce) {
+  .anim-up, .anim-shake { animation: none; }
+}

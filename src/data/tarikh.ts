@@ -1,0 +1,37 @@
+import { build, Row } from './build';
+
+const rows: Row[] = [
+  ['Kelahiran Nabi', 'Nabi Muhammad SAW lahir di kota ...', ['Mekkah', 'Madinah', 'Thaif', 'Yaman'], 0, 'Nabi Muhammad SAW lahir di Mekkah.'],
+  ['Kelahiran Nabi', 'Nabi Muhammad SAW lahir pada tahun ...', ['Tahun Gajah (571 M)', '622 M', '610 M', '632 M'], 0, 'Beliau lahir pada Tahun Gajah, sekitar 571 M, 12 Rabiul Awal.'],
+  ['Keluarga Nabi', 'Nama ayah Nabi Muhammad SAW adalah ...', 'Abdullah', ['abdulah', 'abdullah bin abdul muthalib'], 'Ayah Nabi bernama Abdullah bin Abdul Muthalib, wafat sebelum Nabi lahir.'],
+  ['Keluarga Nabi', 'Nama ibu Nabi Muhammad SAW adalah ...', 'Aminah', ['siti aminah', 'aminah binti wahab'], 'Ibu Nabi bernama Aminah binti Wahab.'],
+  ['Masa Kecil Nabi', 'Ibu susu Nabi Muhammad SAW adalah ...', ["Halimah as-Sa'diyah", 'Khadijah', 'Aisyah', 'Fatimah'], 0, "Nabi disusui oleh Halimah as-Sa'diyah dari Bani Sa'ad."],
+  ['Masa Kecil Nabi', 'Setelah kakeknya wafat, Nabi Muhammad diasuh oleh pamannya yang bernama ...', ['Abu Thalib', 'Abu Lahab', 'Abbas', 'Hamzah'], 0, 'Abu Thalib mengasuh dan melindungi Nabi.'],
+  ['Masa Kecil Nabi', 'Kakek Nabi yang mengasuh beliau setelah ibunya wafat adalah ...', 'Abdul Muthalib', ['abdul mutalib', 'abdul muttalib', 'abdul muthollib', 'abdul mutholib'], 'Abdul Muthalib mengasuh Nabi hingga usia sekitar 8 tahun.', 2],
+  ['Akhlak Nabi', 'Gelar Al-Amin yang diberikan kepada Nabi Muhammad artinya ...', ['Orang yang dapat dipercaya', 'Orang yang cerdas', 'Orang yang pemberani', 'Orang yang kaya'], 0, 'Al-Amin artinya orang yang dapat dipercaya.'],
+  ['Kenabian', 'Wahyu pertama diterima Nabi Muhammad di ...', ['Gua Hira', 'Gua Tsur', 'Masjidil Haram', 'Bukit Shafa'], 0, 'Wahyu pertama turun di Gua Hira melalui Malaikat Jibril.'],
+  ['Kenabian', 'Nabi Muhammad menerima wahyu pertama pada usia ...', ['40 tahun', '25 tahun', '53 tahun', '63 tahun'], 0, 'Beliau diangkat menjadi rasul pada usia 40 tahun.'],
+  ['Kenabian', 'Wahyu pertama adalah surah ... ayat 1-5.', 'Al-Alaq', ['alaq', "al-'alaq", 'al alaq', 'iqra', 'surah al alaq'], 'Wahyu pertama: QS Al-Alaq ayat 1-5, diawali kata "Iqra\'" (bacalah).'],
+  ['Keluarga Nabi', 'Istri pertama Nabi Muhammad SAW adalah ...', ['Khadijah', 'Aisyah', 'Hafshah', 'Saudah'], 0, 'Khadijah binti Khuwailid adalah istri pertama dan orang pertama yang beriman.'],
+  ['Hijrah', 'Saat hijrah, Nabi dan Abu Bakar bersembunyi di Gua ...', ['Tsur', 'Hira', 'Uhud', 'Badar'], 0, 'Jangan tertukar: Gua Hira tempat wahyu pertama, Gua Tsur tempat bersembunyi saat hijrah.', 2, 'lomba'],
+  ['Hijrah', 'Kota Madinah sebelum Nabi hijrah bernama ...', 'Yatsrib', ['yasrib', 'yathrib', 'yastrib'], 'Yatsrib berganti nama menjadi Madinah setelah Nabi hijrah.'],
+  ['Hijrah', 'Masjid pertama yang dibangun Nabi Muhammad SAW adalah Masjid ...', ['Quba', 'Nabawi', 'Al-Haram', 'Al-Aqsa'], 0, 'Masjid Quba dibangun dalam perjalanan hijrah sebelum masuk Madinah.'],
+  ['Hijrah', 'Penduduk Madinah yang menolong kaum Muhajirin disebut kaum ...', ['Anshar', 'Quraisy', 'Badui', 'Yahudi'], 0, 'Anshar artinya penolong; Muhajirin adalah orang yang berhijrah dari Mekkah.'],
+  ['Perang', 'Perang pertama umat Islam yang dimenangkan kaum muslimin adalah Perang ...', ['Badar', 'Uhud', 'Khandaq', 'Hunain'], 0, 'Perang Badar terjadi tahun 2 H, 313 muslim melawan sekitar 1.000 pasukan Quraisy.'],
+  ['Perang', 'Usulan menggali parit pada Perang Khandaq datang dari sahabat ...', ['Salman al-Farisi', 'Bilal bin Rabah', 'Abu Bakar', 'Khalid bin Walid'], 0, 'Salman al-Farisi berasal dari Persia dan mengusulkan strategi parit (khandaq).', 2, 'lomba'],
+  ['Isra Mikraj', 'Perjalanan Nabi pada malam hari dari Masjidil Haram ke Masjidil Aqsa disebut ...', "Isra'", ['isra', 'israk', 'isro', 'isra mikraj', "isra mi'raj"], "Isra': Masjidil Haram ke Masjidil Aqsa. Mi'raj: naik ke Sidratul Muntaha."],
+  ['Isra Mikraj', "Perintah apa yang diterima Nabi pada peristiwa Isra' Mi'raj?", ['Shalat lima waktu', 'Puasa Ramadhan', 'Zakat', 'Haji'], 0, "Perintah shalat lima waktu diterima langsung saat Mi'raj."],
+  ['Dakwah di Mekkah', 'Tahun wafatnya Khadijah dan Abu Thalib disebut ...', ['Amul Huzni (tahun kesedihan)', 'Tahun Gajah', 'Tahun Hijriah', 'Fathu Makkah'], 0, 'Amul Huzni artinya tahun kesedihan.', 2],
+  ['Fathu Makkah', 'Peristiwa pembebasan kota Mekkah disebut ...', ['Fathu Makkah', 'Hijrah', "Isra' Mi'raj", "Haji Wada'"], 0, 'Fathu Makkah terjadi tahun 8 H tanpa pertumpahan darah besar.'],
+  ['Wafat Nabi', 'Nabi Muhammad SAW wafat pada usia ... tahun.', '63', ['enam puluh tiga', 'enampuluh tiga', '63 tahun'], 'Nabi wafat di Madinah pada usia 63 tahun (11 H).', 2],
+  ['Khulafaur Rasyidin', 'Khalifah pertama setelah Nabi wafat adalah ...', ['Abu Bakar ash-Shiddiq', 'Umar bin Khattab', 'Utsman bin Affan', 'Ali bin Abi Thalib'], 0, 'Urutan Khulafaur Rasyidin: Abu Bakar, Umar, Utsman, Ali.'],
+  ['Khulafaur Rasyidin', 'Khalifah kedua yang bergelar Al-Faruq adalah ...', 'Umar bin Khattab', ['umar', 'umar bin khatab', 'umar ibn khattab', 'umar bin al khattab', 'umar al faruq'], 'Umar bin Khattab bergelar Al-Faruq (pembeda yang benar dan salah).'],
+  ['Khulafaur Rasyidin', "Khalifah yang menyeragamkan penulisan Al-Qur'an menjadi Mushaf Utsmani adalah ...", ['Utsman bin Affan', 'Ali bin Abi Thalib', 'Abu Bakar ash-Shiddiq', 'Umar bin Khattab'], 0, "Abu Bakar mengumpulkan Al-Qur'an, sedangkan Utsman menyeragamkannya menjadi Mushaf Utsmani.", 3, 'lomba'],
+  ['Sahabat', 'Sahabat yang pertama kali mengumandangkan azan adalah ...', 'Bilal bin Rabah', ['bilal', 'bilal bin robah', 'bilal ibn rabah'], 'Bilal bin Rabah dikenal sebagai muazin Rasulullah.'],
+  ['Sahabat', 'Dari kalangan anak-anak, yang pertama masuk Islam adalah ...', ['Ali bin Abi Thalib', 'Zaid bin Haritsah', 'Abu Bakar', 'Umar bin Khattab'], 0, 'Ali bin Abi Thalib masuk Islam ketika masih anak-anak.', 2],
+  ['Kisah Nabi', 'Nabi yang membuat kapal besar atas perintah Allah adalah Nabi ...', ['Nuh', 'Yunus', 'Musa', 'Sulaiman'], 0, 'Nabi Nuh membuat kapal untuk menyelamatkan orang beriman dari banjir besar.'],
+  ['Kisah Nabi', 'Nabi yang pernah ditelan ikan besar adalah Nabi ...', ['Yunus', 'Ayub', 'Nuh', 'Yusuf'], 0, 'Nabi Yunus ditelan ikan besar dan bertaubat kepada Allah.'],
+  ['Kisah Nabi', 'Nabi yang dibakar oleh Raja Namrud tetapi selamat adalah Nabi ...', 'Ibrahim', ['ibrohim', 'ibrahim as'], 'Allah menjadikan api dingin bagi Nabi Ibrahim.'],
+];
+
+export const tarikh = build('tarikh', rows);

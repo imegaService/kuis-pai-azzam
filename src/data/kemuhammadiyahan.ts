@@ -1,0 +1,37 @@
+import { build, Row } from './build';
+
+const rows: Row[] = [
+  ['Pendiri', 'Muhammadiyah didirikan oleh ...', ['K.H. Ahmad Dahlan', "K.H. Hasyim Asy'ari", 'Ki Hajar Dewantara', 'Buya Hamka'], 0, 'Muhammadiyah didirikan oleh K.H. Ahmad Dahlan.'],
+  ['Pendiri', 'Nama kecil K.H. Ahmad Dahlan adalah ...', 'Muhammad Darwis', ['darwis', 'muhammad darwish', 'm darwis', 'mohammad darwis', 'muhamad darwis'], 'Nama kecil beliau Muhammad Darwis; nama Ahmad Dahlan diperoleh sepulang dari Mekkah.'],
+  ['Sejarah Berdiri', 'Muhammadiyah didirikan di kota ...', ['Yogyakarta', 'Surakarta', 'Jakarta', 'Surabaya'], 0, 'Muhammadiyah berdiri di Kampung Kauman, Yogyakarta.'],
+  ['Sejarah Berdiri', 'Tanggal berdirinya Muhammadiyah adalah ...', ['18 November 1912', '17 Agustus 1945', '28 Oktober 1928', '20 Mei 1908'], 0, 'Muhammadiyah berdiri 18 November 1912 M bertepatan 8 Dzulhijjah 1330 H.'],
+  ['Sejarah Berdiri', 'Muhammadiyah berdiri pada tahun Masehi ...', '1912', ['seribu sembilan ratus dua belas', 'th 1912'], 'Muhammadiyah berdiri tahun 1912.'],
+  ['Sejarah Berdiri', 'Muhammadiyah berdiri pada 8 Dzulhijjah tahun ... Hijriah.', ['1330', '1350', '1300', '1912'], 0, 'Tahun Hijriahnya 1330 H. Jebakan: 1912 adalah tahun Masehi.', 3, 'lomba'],
+  ['Makna', 'Kata "Muhammadiyah" berarti ...', ['Pengikut Nabi Muhammad', 'Pembaharu Islam', 'Persatuan umat', 'Pemuda Islam'], 0, 'Muhammadiyah artinya pengikut Nabi Muhammad SAW.'],
+  ['Pendiri', 'K.H. Ahmad Dahlan lahir di kampung ..., Yogyakarta.', ['Kauman', 'Kotagede', 'Malioboro', 'Bantul'], 0, 'K.H. Ahmad Dahlan lahir di Kauman, Yogyakarta, tahun 1868.', 2],
+  ['Lambang', 'Lambang Muhammadiyah berbentuk ...', ['Matahari bersinar', 'Bulan sabit', 'Bintang lima', 'Bola dunia'], 0, 'Lambang Muhammadiyah berupa matahari dengan 12 sinar dan kalimat syahadat di tengah.'],
+  ['Lambang', 'Jumlah sinar pada lambang matahari Muhammadiyah adalah ...', '12', ['dua belas', 'duabelas', '12 sinar'], 'Matahari Muhammadiyah memancarkan 12 sinar.'],
+  ['Lambang', 'Warna dasar lambang Muhammadiyah adalah ...', ['Hijau', 'Biru', 'Merah', 'Kuning'], 0, 'Lambang Muhammadiyah berwarna dasar hijau dengan gambar dan tulisan putih.'],
+  ['Semboyan', 'Semboyan Muhammadiyah "Fastabiqul Khairat" artinya ...', ['Berlomba-lomba dalam kebaikan', 'Bersatu kita teguh', 'Menuntut ilmu sepanjang hayat', 'Mengajak kepada kebaikan'], 0, "Fastabiqul khairat diambil dari QS Al-Baqarah ayat 148."],
+  ['Ortom', 'Organisasi perempuan Muhammadiyah yang dirintis Nyai Ahmad Dahlan adalah ...', 'Aisyiyah', ['aisyiah', 'aisiyah', "'aisyiyah", 'aisyiyah'], 'Aisyiyah berdiri tahun 1917.'],
+  ['Tokoh', 'Nama asli Nyai Ahmad Dahlan adalah ...', ['Siti Walidah', 'Siti Aminah', 'Siti Khadijah', 'Siti Fatimah'], 0, 'Nyai Ahmad Dahlan bernama asli Siti Walidah dan merupakan Pahlawan Nasional.', 2],
+  ['Ortom', 'Organisasi kepanduan milik Muhammadiyah adalah ...', ['Hizbul Wathan', 'Tapak Suci', 'Nasyiatul Aisyiyah', 'Pemuda Muhammadiyah'], 0, 'Hizbul Wathan (HW) adalah gerakan kepanduan Muhammadiyah, berdiri 1918.'],
+  ['Ortom', 'Tapak Suci Putera Muhammadiyah adalah organisasi di bidang ...', ['Pencak silat', 'Kepanduan', 'Kesehatan', 'Pertanian'], 0, 'Tapak Suci adalah perguruan pencak silat Muhammadiyah.'],
+  ['Ortom', 'Organisasi pelajar Muhammadiyah disingkat ...', 'IPM', ['ikatan pelajar muhammadiyah', 'i p m'], 'IPM = Ikatan Pelajar Muhammadiyah.'],
+  ['Ortom', 'Organisasi otonom Muhammadiyah untuk mahasiswa adalah ...', ['Ikatan Mahasiswa Muhammadiyah (IMM)', 'Ikatan Pelajar Muhammadiyah (IPM)', 'Hizbul Wathan', 'Aisyiyah'], 0, 'IMM adalah wadah mahasiswa Muhammadiyah.'],
+  ['Ortom', 'Organisasi otonom untuk putri-putri muda Muhammadiyah adalah ...', ['Nasyiatul Aisyiyah', 'Aisyiyah', 'IMM', 'Tapak Suci'], 0, 'Nasyiatul Aisyiyah (NA) adalah organisasi putri muda Muhammadiyah.', 2, 'lomba'],
+  ['Pemikiran Pendiri', 'Surah yang diajarkan berulang-ulang oleh K.H. Ahmad Dahlan agar murid peduli pada fakir miskin dan anak yatim adalah surah ...', ["Al-Ma'un", 'Al-Fatihah', 'Al-Ikhlas', 'An-Nas'], 0, "Ajaran Al-Ma'un melahirkan amal usaha sosial seperti panti asuhan dan rumah sakit.", 2],
+  ['Amal Usaha', 'Rumah sakit Muhammadiyah awalnya bernama PKO, singkatan dari Penolong Kesengsaraan ...', 'Oemoem', ['umum', 'oemum', 'oemoem'], 'PKO = Penolong Kesengsaraan Oemoem (Umum), kini dikenal sebagai PKU.', 3],
+  ['Organisasi', 'Majelis Muhammadiyah yang membahas masalah hukum agama adalah Majelis ...', ['Tarjih dan Tajdid', 'Pendidikan Dasar dan Menengah', 'Pustaka', 'Kesehatan'], 0, 'Majelis Tarjih dan Tajdid membahas dan menetapkan tuntunan agama.', 2],
+  ['Identitas', 'Muhammadiyah adalah gerakan Islam, gerakan dakwah amar makruf nahi mungkar, dan gerakan ...', ['Tajdid (pembaruan)', 'Politik', 'Perdagangan', 'Militer'], 0, 'Tajdid artinya pembaruan.', 2],
+  ['Tokoh', 'Ketua Umum Pimpinan Pusat Muhammadiyah periode 2022-2027 adalah ...', ['Prof. Haedar Nashir', 'Prof. Din Syamsuddin', 'Prof. Amien Rais', 'Buya Syafii Maarif'], 0, 'Prof. Dr. Haedar Nashir terpilih kembali pada Muktamar ke-48 di Surakarta (2022).', 2],
+  ['Sejarah', 'Majalah yang diterbitkan Muhammadiyah sejak tahun 1915 adalah ...', ['Suara Muhammadiyah', 'Suara Aisyiyah', 'Panji Masyarakat', 'Republika'], 0, 'Suara Muhammadiyah terbit sejak 1915.', 3],
+  ['Organisasi', 'Pimpinan Muhammadiyah di tingkat provinsi disebut Pimpinan ...', ['Wilayah', 'Daerah', 'Cabang', 'Ranting'], 0, 'Tingkatan: Pusat, Wilayah (provinsi), Daerah (kab/kota), Cabang (kecamatan), Ranting (desa).', 2, 'lomba'],
+  ['Organisasi', 'Pimpinan Muhammadiyah di tingkat desa atau kelurahan disebut Pimpinan ...', 'Ranting', ['ranting', 'pimpinan ranting'], 'Ranting adalah tingkat pimpinan paling bawah, di desa/kelurahan.', 2],
+  ['Identitas', 'Lagu mars Muhammadiyah berjudul ...', ['Sang Surya', 'Indonesia Raya', 'Hari Merdeka', 'Bangun Pemudi Pemuda'], 0, 'Mars Muhammadiyah berjudul "Sang Surya".'],
+  ['Tokoh', 'Panglima besar yang pernah aktif di kepanduan Hizbul Wathan adalah ...', ['Jenderal Sudirman', 'Jenderal A.H. Nasution', 'Bung Tomo', 'Pangeran Diponegoro'], 0, 'Jenderal Sudirman adalah kader Hizbul Wathan dan guru di sekolah Muhammadiyah.', 2],
+  ['Tujuan', 'Tujuan Muhammadiyah: menegakkan agama Islam sehingga terwujud masyarakat Islam yang ...', 'sebenar-benarnya', ['sebenar benarnya', 'yang sebenar-benarnya', 'sebenarbenarnya'], 'Tujuan Muhammadiyah: menegakkan dan menjunjung tinggi agama Islam sehingga terwujud masyarakat Islam yang sebenar-benarnya.', 3],
+  ['Pendiri', 'Atas jasanya, K.H. Ahmad Dahlan ditetapkan sebagai ...', ['Pahlawan Nasional', 'Presiden pertama', 'Gubernur Yogyakarta', 'Menteri Agama'], 0, 'K.H. Ahmad Dahlan ditetapkan sebagai Pahlawan Nasional tahun 1961.'],
+];
+
+export const kemuhammadiyahan = build('kemuhammadiyahan', rows);
