@@ -4,7 +4,13 @@ import { validateQuestion } from './validate';
 import { uid } from './storage';
 
 export const DEFAULT_MODEL = 'gemini-3.8-flash';
-export const FALLBACK_MODELS = ['gemini-3.8-flash', 'gemini-3.5-flash', 'gemini-3-flash', 'gemini-2.5-flash'];
+export const FALLBACK_MODELS = [
+  'gemini-3.8-flash',
+  'gemini-3.8-flash-preview',
+  'gemini-flash-latest',
+  'gemini-3.5-flash',
+  'gemini-3-flash',
+];
 
 export class GeminiError extends Error {
   kind: 'key' | 'offline' | 'quota' | 'model' | 'other';
@@ -16,7 +22,10 @@ export class GeminiError extends Error {
 
 export function modelChain(preferred: string): string[] {
   const first = (preferred || '').trim();
-  return Array.from(new Set(['gemini-3.8-flash', first, ...FALLBACK_MODELS].filter(Boolean)));
+  const useFirst = first && first !== 'gemini-2.5-flash' && first !== 'gemini-2.0-flash' ? first : '';
+  return Array.from(
+    new Set(['gemini-3.8-flash', 'gemini-3.8-flash-preview', 'gemini-flash-latest', useFirst, ...FALLBACK_MODELS].filter(Boolean))
+  );
 }
 
 async function callModel(key: string, model: string, body: object, timeoutMs: number) {
@@ -38,7 +47,7 @@ async function callModel(key: string, model: string, body: object, timeoutMs: nu
   }
 }
 
-async function discoverFlashModel(key: string, timeoutMs: number): Promise<string | null> {
+async function discoverFlashModels(key: string, timeoutMs: number): Promise<string[]> {
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), timeoutMs);
   try {
@@ -47,21 +56,25 @@ async function discoverFlashModel(key: string, timeoutMs: number): Promise<strin
       signal: ctrl.signal,
       headers: { 'x-goog-api-key': key },
     });
-    if (!res.ok) return null;
+    if (!res.ok) return [];
     const json = await res.json();
     const models: any[] = Array.isArray(json?.models) ? json.models : [];
     const usable = models
       .filter((m) => Array.isArray(m?.supportedGenerationMethods) && m.supportedGenerationMethods.includes('generateContent'))
       .map((m) => String(m.name || '').replace(/^models\//, ''))
-      .filter(Boolean);
-    return (
-      usable.find((n) => n.includes('flash') && !n.includes('lite') && !n.includes('8b')) ||
-      usable.find((n) => n.includes('flash')) ||
-      usable[0] ||
-      null
-    );
+      .filter((n) => n && !n.includes('embedding') && !n.includes('imagen') && !n.includes('tts') && !n.includes('audio'));
+
+    const flashModels = usable
+      .filter((n) => n.includes('flash'))
+      .sort((a, b) => b.localeCompare(a, undefined, { numeric: true }));
+
+    const otherModels = usable
+      .filter((n) => !n.includes('flash'))
+      .sort((a, b) => b.localeCompare(a, undefined, { numeric: true }));
+
+    return [...flashModels, ...otherModels];
   } catch {
-    return null;
+    return [];
   } finally {
     clearTimeout(timer);
   }
@@ -92,9 +105,11 @@ async function generate(
     },
   };
 
+  let firstErr: GeminiError | null = null;
   let lastErr: GeminiError = new GeminiError('model', 'Tidak ada model Gemini yang tersedia.');
   const tried = new Set<string>();
   const queue = modelChain(preferred);
+  let discovered = false;
 
   for (let i = 0; i < queue.length; i++) {
     const model = queue[i];
@@ -110,6 +125,7 @@ async function generate(
         'other',
         e?.name === 'AbortError' ? 'Gemini terlalu lama merespons.' : 'Tidak bisa menghubungi server Gemini.'
       );
+      if (!firstErr) firstErr = lastErr;
       continue;
     }
 
@@ -118,12 +134,14 @@ async function generate(
       const text = json?.candidates?.[0]?.content?.parts?.map((p: any) => p.text ?? '').join('');
       if (!text) {
         lastErr = new GeminiError('other', 'Gemini tidak memberi jawaban.');
+        if (!firstErr) firstErr = lastErr;
         continue;
       }
       try {
         return { data: JSON.parse(text), model };
       } catch {
         lastErr = new GeminiError('other', 'Format jawaban Gemini tidak valid.');
+        if (!firstErr) firstErr = lastErr;
         continue;
       }
     }
@@ -133,7 +151,7 @@ async function generate(
     try {
       apiMsg = JSON.parse(rawDetail)?.error?.message || '';
     } catch {
-      apiMsg = rawDetail.slice(0, 140);
+      apiMsg = rawDetail.slice(0, 160);
     }
     const detail = rawDetail.toLowerCase();
 
@@ -155,16 +173,18 @@ async function generate(
     } else {
       lastErr = new GeminiError('other', `Gemini gagal (${res.status})${apiMsg ? `: ${apiMsg}` : '.'}`);
     }
+    if (!firstErr) firstErr = lastErr;
 
-    if (i === queue.length - 1 && lastErr.kind === 'model') {
-      const autoModel = await discoverFlashModel(apiKey, 10000);
-      if (autoModel && !tried.has(autoModel)) {
-        queue.push(autoModel);
+    if (i === queue.length - 1 && !discovered && lastErr.kind === 'model') {
+      discovered = true;
+      const autoModels = await discoverFlashModels(apiKey, 10000);
+      for (const m of autoModels) {
+        if (!tried.has(m)) queue.push(m);
       }
     }
   }
 
-  throw lastErr;
+  throw firstErr || lastErr;
 }
 
 const questionSchema = {
