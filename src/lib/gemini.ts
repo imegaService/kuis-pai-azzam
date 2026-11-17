@@ -3,8 +3,8 @@ import { catName } from './categories';
 import { validateQuestion } from './validate';
 import { uid } from './storage';
 
-export const DEFAULT_MODEL = 'gemini-2.5-flash';
-export const FALLBACK_MODELS = ['gemini-2.5-flash', 'gemini-2.5-flash-lite', 'gemini-2.0-flash'];
+export const DEFAULT_MODEL = 'gemini-3.8-flash';
+export const FALLBACK_MODELS = ['gemini-3.8-flash', 'gemini-3.5-flash', 'gemini-3-flash', 'gemini-2.5-flash'];
 
 export class GeminiError extends Error {
   kind: 'key' | 'offline' | 'quota' | 'model' | 'other';
@@ -16,18 +16,21 @@ export class GeminiError extends Error {
 
 export function modelChain(preferred: string): string[] {
   const first = (preferred || '').trim();
-  const validFirst = first && !first.startsWith('gemini-3') ? first : '';
-  return Array.from(new Set([validFirst, ...FALLBACK_MODELS].filter(Boolean)));
+  return Array.from(new Set(['gemini-3.8-flash', first, ...FALLBACK_MODELS].filter(Boolean)));
 }
 
-async function callEndpoint(url: string, headers: Record<string, string>, body: object, timeoutMs: number) {
+async function callModel(key: string, model: string, body: object, timeoutMs: number) {
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), timeoutMs);
   try {
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`;
     return await fetch(url, {
       method: 'POST',
       signal: ctrl.signal,
-      headers,
+      headers: {
+        'Content-Type': 'application/json',
+        'x-goog-api-key': key,
+      },
       body: JSON.stringify(body),
     });
   } finally {
@@ -35,25 +38,33 @@ async function callEndpoint(url: string, headers: Record<string, string>, body: 
   }
 }
 
-async function callModel(key: string, model: string, body: object, timeoutMs: number) {
-  const encodedModel = encodeURIComponent(model);
-  const encodedKey = encodeURIComponent(key);
-
-  if (key.startsWith('AQ.')) {
-    const vertexUrl = `https://aiplatform.googleapis.com/v1/publishers/google/models/${encodedModel}:generateContent?key=${encodedKey}`;
-    const res = await callEndpoint(vertexUrl, { 'Content-Type': 'application/json' }, body, timeoutMs);
-    if (res.ok || (res.status !== 404 && res.status !== 401 && res.status !== 403)) {
-      return res;
-    }
+async function discoverFlashModel(key: string, timeoutMs: number): Promise<string | null> {
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), timeoutMs);
+  try {
+    const res = await fetch('https://generativelanguage.googleapis.com/v1beta/models', {
+      method: 'GET',
+      signal: ctrl.signal,
+      headers: { 'x-goog-api-key': key },
+    });
+    if (!res.ok) return null;
+    const json = await res.json();
+    const models: any[] = Array.isArray(json?.models) ? json.models : [];
+    const usable = models
+      .filter((m) => Array.isArray(m?.supportedGenerationMethods) && m.supportedGenerationMethods.includes('generateContent'))
+      .map((m) => String(m.name || '').replace(/^models\//, ''))
+      .filter(Boolean);
+    return (
+      usable.find((n) => n.includes('flash') && !n.includes('lite') && !n.includes('8b')) ||
+      usable.find((n) => n.includes('flash')) ||
+      usable[0] ||
+      null
+    );
+  } catch {
+    return null;
+  } finally {
+    clearTimeout(timer);
   }
-
-  const devUrl = `https://generativelanguage.googleapis.com/v1beta/models/${encodedModel}:generateContent`;
-  return await callEndpoint(
-    devUrl,
-    { 'Content-Type': 'application/json', 'x-goog-api-key': key },
-    body,
-    timeoutMs
-  );
 }
 
 export interface GenResult {
@@ -82,8 +93,14 @@ async function generate(
   };
 
   let lastErr: GeminiError = new GeminiError('model', 'Tidak ada model Gemini yang tersedia.');
+  const tried = new Set<string>();
+  const queue = modelChain(preferred);
 
-  for (const model of modelChain(preferred)) {
+  for (let i = 0; i < queue.length; i++) {
+    const model = queue[i];
+    if (tried.has(model)) continue;
+    tried.add(model);
+
     let res: Response;
     try {
       res = await callModel(apiKey, model, body, timeoutMs);
@@ -137,6 +154,13 @@ async function generate(
       lastErr = new GeminiError('model', apiMsg ? `Model "${model}" gagal: ${apiMsg}` : `Model "${model}" tidak tersedia.`);
     } else {
       lastErr = new GeminiError('other', `Gemini gagal (${res.status})${apiMsg ? `: ${apiMsg}` : '.'}`);
+    }
+
+    if (i === queue.length - 1 && lastErr.kind === 'model') {
+      const autoModel = await discoverFlashModel(apiKey, 10000);
+      if (autoModel && !tried.has(autoModel)) {
+        queue.push(autoModel);
+      }
     }
   }
 
